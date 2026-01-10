@@ -26,12 +26,12 @@ class OrganizationNumber implements IdentityNumberInterface
         return Luhn::check($numberInDigits);
     }
 
-    public function longFormat(bool $separator): string
+    public function longFormat(bool $separator = false): string
     {
         return $this->shortFormat($separator);
     }
 
-    public function shortFormat(bool $separator): string
+    public function shortFormat(bool $separator = false): string
     {
         if ($separator) {
             return substr_replace($this->normalizedNumber, '-', -4, 0);

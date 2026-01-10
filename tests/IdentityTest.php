@@ -19,6 +19,8 @@ it('can determine the identity from a swedish personal number', function ($perso
             '681204-3765',
             '196812043765',
             '6812043765',
+            '980319+9570', // centenarian
+            '980379-9577', // coordination number
         ],
     );
 
@@ -120,6 +122,70 @@ describe('PersonalNumber', function () {
                 '071218-3512',
                 '200712183512',
                 '0712183512',
+            ],
+        );
+
+    it('can identify centenarians using + separator', function (string $ssn, string $expectedShort, string $expectedLong) {
+        $personalNumber = new PersonalNumber($ssn);
+
+        expect($personalNumber->shortFormat(true))->toBe($expectedShort);
+        expect($personalNumber->longFormat())->toBe($expectedLong);
+    })
+        ->with(
+            [
+                'centenarian with + separator' => [
+                    '980319+9570',
+                    '980319+9570',
+                    '189803199570',
+                ],
+                'centenarian long format with + separator' => [
+                    '18980319+9570',
+                    '980319+9570',
+                    '189803199570',
+                ],
+            ],
+        );
+
+    it('can get a personal-number in long format', function (string $ssn, string $expectedWithSeparator, string $expectedWithoutSeparator) {
+        $personalNumber = new PersonalNumber($ssn);
+
+        expect($personalNumber->longFormat(true))->toBe($expectedWithSeparator);
+        expect($personalNumber->longFormat(false))->toBe($expectedWithoutSeparator);
+    })
+        ->with(
+            [
+                'short format input' => [
+                    '980319-9570',
+                    '19980319-9570',
+                    '199803199570',
+                ],
+                'long format input' => [
+                    '199803199570',
+                    '19980319-9570',
+                    '199803199570',
+                ],
+            ],
+        );
+
+    it('can identify coordination numbers', function (string $ssn, bool $isCoordination) {
+        $personalNumber = new PersonalNumber($ssn);
+
+        expect($personalNumber->isCoordinationNumber())->toBe($isCoordination);
+    })
+        ->with(
+            [
+                'regular personal number' => ['980319-9570', false],
+                'coordination number (day + 60)' => ['980379-9577', true],
+            ],
+        );
+
+    it('throws an exception for invalid coordination numbers', function ($ssn) {
+        new PersonalNumber($ssn);
+    })->throws(IdentityException::class)
+        ->with(
+            [
+                '980392-9570', // day 92 - 60 = 32, invalid
+                '980300-9570', // day 0 - invalid
             ],
         );
 
