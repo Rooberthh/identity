@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rooberthh\Identity;
 
-class Identity
+final class Identity
 {
     public static function identify(string $number): IdentityNumberInterface
     {

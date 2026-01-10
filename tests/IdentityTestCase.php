@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rooberthh\Identity\Tests;
 
 use PHPUnit\Framework\TestCase as BaseTestCase;

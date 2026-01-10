@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rooberthh\Identity;
 
-class Luhn
+final class Luhn
 {
     public static function check(string $number): bool
     {

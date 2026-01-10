@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Rooberthh\Identity\Gender;
 use Rooberthh\Identity\Identity;
 use Rooberthh\Identity\IdentityException;

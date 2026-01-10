@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rooberthh\Identity;
 
-class OrganizationNumber implements IdentityNumberInterface
+final class OrganizationNumber implements IdentityNumberInterface
 {
     protected string $normalizedNumber;
 
