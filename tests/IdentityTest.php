@@ -20,8 +20,8 @@ it('can determine the identity from a swedish personal number', function ($perso
             '681204-3765',
             '196812043765',
             '6812043765',
-            '980319+9570', // centenarian
-            '980379-9577', // coordination number
+            '770604+0016', // centenarian
+            '770664-0005', // coordination number
         ],
     );
 
@@ -92,20 +92,20 @@ describe('OrganizationNumber', function () {
         ->with(
             [
                 'long-format with separator' => [
-                    '19980319-9570',
-                    '9803199570',
+                    '19770604-0016',
+                    '7706040016',
                 ],
                 'long-format without separator' => [
-                    '199803199570',
-                    '9803199570',
+                    '197706040016',
+                    '7706040016',
                 ],
                 'short-format with separator' => [
-                    '980319-9570',
-                    '9803199570',
+                    '770604-0016',
+                    '7706040016',
                 ],
                 'short-format without separator' => [
-                    '9803199570',
-                    '9803199570',
+                    '7706040016',
+                    '7706040016',
                 ],
             ],
         );
@@ -135,14 +135,14 @@ describe('PersonalNumber', function () {
         ->with(
             [
                 'centenarian with + separator' => [
-                    '980319+9570',
-                    '980319+9570',
-                    '189803199570',
+                    '770604+0016',
+                    '770604+0016',
+                    '187706040016',
                 ],
                 'centenarian long format with + separator' => [
-                    '18980319+9570',
-                    '980319+9570',
-                    '189803199570',
+                    '18770604+0016',
+                    '770604+0016',
+                    '187706040016',
                 ],
             ],
         );
@@ -156,14 +156,14 @@ describe('PersonalNumber', function () {
         ->with(
             [
                 'short format input' => [
-                    '980319-9570',
-                    '19980319-9570',
-                    '199803199570',
+                    '770604-0016',
+                    '19770604-0016',
+                    '197706040016',
                 ],
                 'long format input' => [
-                    '199803199570',
-                    '19980319-9570',
-                    '199803199570',
+                    '197706040016',
+                    '19770604-0016',
+                    '197706040016',
                 ],
             ],
         );
@@ -175,8 +175,8 @@ describe('PersonalNumber', function () {
     })
         ->with(
             [
-                'regular personal number' => ['980319-9570', false],
-                'coordination number (day + 60)' => ['980379-9577', true],
+                'regular personal number' => ['770604-0016', false],
+                'coordination number (day + 60)' => ['770664-0005', true],
             ],
         );
 
@@ -185,8 +185,8 @@ describe('PersonalNumber', function () {
     })->throws(IdentityException::class)
         ->with(
             [
-                '980392-9570', // day 92 - 60 = 32, invalid
-                '980300-9570', // day 0 - invalid
+                '770692-0016', // day 92 - 60 = 32, invalid
+                '770600-0016', // day 0 - invalid
             ],
         );
 
@@ -198,20 +198,20 @@ describe('PersonalNumber', function () {
     ->with(
         [
             'long-format with separator' => [
-                '19980319-9570',
-                '980319-9570',
+                '19770604-0016',
+                '770604-0016',
             ],
             'long-format without separator' => [
-                '199803199570',
-                '980319-9570',
+                '197706040016',
+                '770604-0016',
             ],
             'short-format with separator' => [
-                '980319-9570',
-                '980319-9570',
+                '770604-0016',
+                '770604-0016',
             ],
             'short-format without separator' => [
-                '9803199570',
-                '980319-9570',
+                '7706040016',
+                '770604-0016',
             ],
         ],
     );
@@ -224,20 +224,20 @@ describe('PersonalNumber', function () {
         ->with(
             [
                 'long-format with separator' => [
-                    '19980319-9570',
-                    '9803199570',
+                    '19770604-0016',
+                    '7706040016',
                 ],
                 'long-format without separator' => [
-                    '199803199570',
-                    '9803199570',
+                    '197706040016',
+                    '7706040016',
                 ],
                 'short-format with separator' => [
-                    '980319-9570',
-                    '9803199570',
+                    '770604-0016',
+                    '7706040016',
                 ],
                 'short-format without separator' => [
-                    '9803199570',
-                    '9803199570',
+                    '7706040016',
+                    '7706040016',
                 ],
             ],
         );
@@ -251,24 +251,24 @@ describe('PersonalNumber metadata', function () {
     })
         ->with(
             [
-                'regular personal number' => ['980319-9570', '1998-03-19'],
-                'long format' => ['199803199570', '1998-03-19'],
-                'centenarian' => ['980319+9570', '1898-03-19'],
-                'coordination number' => ['980379-9577', '1998-03-19'],
+                'regular personal number' => ['770604-0016', '1977-06-04'],
+                'long format' => ['197706040016', '1977-06-04'],
+                'centenarian' => ['770604+0016', '1877-06-04'],
+                'coordination number' => ['770664-0005', '1977-06-04'],
             ],
         );
 
     it('can get the gender from a personal number', function () {
-        $male = new PersonalNumber('980319-9570');
-        $female = new PersonalNumber('980319-9588');
+        $male = new PersonalNumber('770604-0016');
+        $female = new PersonalNumber('770604-6187');
 
         expect($male->getGender())->toBe(Gender::Male);
         expect($female->getGender())->toBe(Gender::Female);
     });
 
     it('can check if personal number is male', function () {
-        $male = new PersonalNumber('980319-9570');
-        $female = new PersonalNumber('980319-9588');
+        $male = new PersonalNumber('770604-0016');
+        $female = new PersonalNumber('770604-6187');
 
         expect($male->isMale())->toBeTrue();
         expect($male->isFemale())->toBeFalse();
@@ -283,8 +283,8 @@ describe('PersonalNumber metadata', function () {
     })
         ->with(
             [
-                'not a centenarian' => ['980319-9570', false],
-                'centenarian with +' => ['980319+9570', true],
+                'not a centenarian' => ['770604-0016', false],
+                'centenarian with +' => ['770604+0016', true],
             ],
         );
 
@@ -295,22 +295,22 @@ describe('PersonalNumber metadata', function () {
     })
         ->with(
             [
-                'adult over 18' => ['980319-9570', 18, true],
-                'adult over 21' => ['980319-9570', 21, true],
-                'centenarian over 100' => ['980319+9570', 100, true],
+                'adult over 18' => ['770604-0016', 18, true],
+                'adult over 21' => ['770604-0016', 21, true],
+                'centenarian over 100' => ['770604+0016', 100, true],
             ],
         );
 
     it('can calculate age', function () {
-        $personalNumber = new PersonalNumber('980319-9570');
+        $personalNumber = new PersonalNumber('770604-0016');
 
-        expect($personalNumber->getAge())->toBeGreaterThanOrEqual(26);
+        expect($personalNumber->getAge())->toBeGreaterThanOrEqual(47);
     });
 });
 
 describe('Identity::tryIdentify', function () {
     it('returns PersonalNumber for valid personal number', function () {
-        $identity = Identity::tryIdentify('980319-9570');
+        $identity = Identity::tryIdentify('770604-0016');
 
         expect($identity)->toBeInstanceOf(PersonalNumber::class);
     });

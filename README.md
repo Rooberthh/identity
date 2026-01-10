@@ -9,7 +9,7 @@ A PHP package to validate and identify Swedish personal numbers (personnummer) a
 ```php
 use Rooberthh\Identity\Identity;
 
-$identity = Identity::identify('980319-9570');
+$identity = Identity::identify('770604-0016');
 // Returns PersonalNumber instance
 
 $identity = Identity::identify('556074-7569');
@@ -33,58 +33,57 @@ if ($identity = Identity::tryIdentify($input)) {
 use Rooberthh\Identity\PersonalNumber;
 
 // Validate without creating object
-if (PersonalNumber::isValid('980319-9570')) {
+if (PersonalNumber::isValid('770604-0016')) {
     // Valid personal number
 }
 
 // Create instance (throws exception if invalid)
-$person = new PersonalNumber('980319-9570');
+$person = new PersonalNumber('770604-0016');
 ```
 
 ### Personal number formatting
 
 ```php
-$person = new PersonalNumber('9803199570');
+$person = new PersonalNumber('7706040016');
 
-$person->shortFormat();        // "9803199570"
-$person->shortFormat(true);    // "980319-9570"
-$person->longFormat();         // "199803199570"
-$person->longFormat(true);     // "19980319-9570"
+$person->shortFormat();        // "7706040016"
+$person->shortFormat(true);    // "770604-0016"
+$person->longFormat();         // "197706040016"
+$person->longFormat(true);     // "19770604-0016"
 ```
 
 ### Extract metadata from personal number
 
 ```php
-$person = new PersonalNumber('980319-9570');
+$person = new PersonalNumber('770604-0016');
 
-$person->getBirthDate();       // DateTimeImmutable: 1998-03-19
-$person->getAge();             // int: 27 (calculated from today)
+$person->getBirthDate();       // DateTimeImmutable: 1977-06-04
+$person->getAge();             // int (calculated from today)
 $person->getGender();          // Gender::Male
 $person->isMale();             // true
 $person->isFemale();           // false
 $person->isOfAge(18);          // true
-$person->isOfAge(30);          // false
 ```
 
 ### Centenarians (100+ years old)
 
 ```php
 // The + separator indicates a person born 100+ years ago
-$person = new PersonalNumber('980319+9570');
+$person = new PersonalNumber('770604+0016');
 
 $person->isCentenarian();      // true
-$person->getBirthDate();       // DateTimeImmutable: 1898-03-19
-$person->shortFormat(true);    // "980319+9570"
+$person->getBirthDate();       // DateTimeImmutable: 1877-06-04
+$person->shortFormat(true);    // "770604+0016"
 ```
 
 ### Coordination numbers (samordningsnummer)
 
 ```php
 // Coordination numbers have day + 60
-$person = new PersonalNumber('980379-9577');
+$person = new PersonalNumber('770664-0005');
 
 $person->isCoordinationNumber(); // true
-$person->getBirthDate();         // DateTimeImmutable: 1998-03-19
+$person->getBirthDate();         // DateTimeImmutable: 1977-06-04
 ```
 
 ### Organization number validation
