@@ -125,4 +125,52 @@ class PersonalNumber implements IdentityNumberInterface
     {
         return $this->isCoordinationNumber;
     }
+
+    public function isCentenarian(): bool
+    {
+        return $this->centenarian;
+    }
+
+    public function getBirthDate(): \DateTimeImmutable
+    {
+        $year = $this->getYear();
+        $month = substr($this->normalizedNumber, 2, 2);
+        $day = (int) substr($this->normalizedNumber, 4, 2);
+
+        if ($this->isCoordinationNumber) {
+            $day -= 60;
+        }
+
+        return new \DateTimeImmutable(sprintf('%s-%s-%02d', $year, $month, $day));
+    }
+
+    public function getAge(): int
+    {
+        $birthDate = $this->getBirthDate();
+        $today = new \DateTimeImmutable('today');
+
+        return $birthDate->diff($today)->y;
+    }
+
+    public function getGender(): Gender
+    {
+        $genderDigit = (int) $this->normalizedNumber[8];
+
+        return $genderDigit % 2 === 0 ? Gender::Female : Gender::Male;
+    }
+
+    public function isMale(): bool
+    {
+        return $this->getGender() === Gender::Male;
+    }
+
+    public function isFemale(): bool
+    {
+        return $this->getGender() === Gender::Female;
+    }
+
+    public function isOfAge(int $minimumAge): bool
+    {
+        return $this->getAge() >= $minimumAge;
+    }
 }

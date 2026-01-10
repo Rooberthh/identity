@@ -41,4 +41,4 @@ tests/
 - PSR-4 autoloading under `Rooberthh\Identity` namespace
 - Laravel Pint for formatting (pint.json config)
 - PHPStan for static analysis
-- Pest for testing
+- Pest for testing 

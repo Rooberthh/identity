@@ -5,7 +5,8 @@
       "Bash(php:*)",
       "Bash(./vendor/bin/pest:*)",
       "Bash(composer stan:*)",
-      "Bash(composer pint:*)"
+      "Bash(composer pint:*)",
+      "Bash(composer dump-autoload:*)"
     ]
   }
 }

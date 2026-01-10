@@ -1,5 +1,6 @@
 <?php
 
+use Rooberthh\Identity\Gender;
 use Rooberthh\Identity\Identity;
 use Rooberthh\Identity\IdentityException;
 use Rooberthh\Identity\OrganizationNumber;
@@ -238,6 +239,97 @@ describe('PersonalNumber', function () {
                     '9803199570',
                     '9803199570',
                 ],
+            ],
+        );
+});
+
+describe('PersonalNumber metadata', function () {
+    it('can get the birth date from a personal number', function (string $ssn, string $expectedDate) {
+        $personalNumber = new PersonalNumber($ssn);
+
+        expect($personalNumber->getBirthDate()->format('Y-m-d'))->toBe($expectedDate);
+    })
+        ->with(
+            [
+                'regular personal number' => ['980319-9570', '1998-03-19'],
+                'long format' => ['199803199570', '1998-03-19'],
+                'centenarian' => ['980319+9570', '1898-03-19'],
+                'coordination number' => ['980379-9577', '1998-03-19'],
+            ],
+        );
+
+    it('can get the gender from a personal number', function () {
+        $male = new PersonalNumber('980319-9570');
+        $female = new PersonalNumber('980319-9588');
+
+        expect($male->getGender())->toBe(Gender::Male);
+        expect($female->getGender())->toBe(Gender::Female);
+    });
+
+    it('can check if personal number is male', function () {
+        $male = new PersonalNumber('980319-9570');
+        $female = new PersonalNumber('980319-9588');
+
+        expect($male->isMale())->toBeTrue();
+        expect($male->isFemale())->toBeFalse();
+        expect($female->isMale())->toBeFalse();
+        expect($female->isFemale())->toBeTrue();
+    });
+
+    it('can identify centenarians', function (string $ssn, bool $expectedCentenarian) {
+        $personalNumber = new PersonalNumber($ssn);
+
+        expect($personalNumber->isCentenarian())->toBe($expectedCentenarian);
+    })
+        ->with(
+            [
+                'not a centenarian' => ['980319-9570', false],
+                'centenarian with +' => ['980319+9570', true],
+            ],
+        );
+
+    it('can check if a person is of age', function (string $ssn, int $minimumAge, bool $expectedResult) {
+        $personalNumber = new PersonalNumber($ssn);
+
+        expect($personalNumber->isOfAge($minimumAge))->toBe($expectedResult);
+    })
+        ->with(
+            [
+                'adult over 18' => ['980319-9570', 18, true],
+                'adult over 21' => ['980319-9570', 21, true],
+                'centenarian over 100' => ['980319+9570', 100, true],
+            ],
+        );
+
+    it('can calculate age', function () {
+        $personalNumber = new PersonalNumber('980319-9570');
+
+        expect($personalNumber->getAge())->toBeGreaterThanOrEqual(26);
+    });
+});
+
+describe('Identity::tryIdentify', function () {
+    it('returns PersonalNumber for valid personal number', function () {
+        $identity = Identity::tryIdentify('980319-9570');
+
+        expect($identity)->toBeInstanceOf(PersonalNumber::class);
+    });
+
+    it('returns OrganizationNumber for valid organization number', function () {
+        $identity = Identity::tryIdentify('556074-7569');
+
+        expect($identity)->toBeInstanceOf(OrganizationNumber::class);
+    });
+
+    it('returns null for invalid input', function ($input) {
+        expect(Identity::tryIdentify($input))->toBeNull();
+    })
+        ->with(
+            [
+                'invalid checksum' => '556074-7561',
+                'invalid personal number' => '20071218-3512',
+                'random string' => 'not-a-number',
+                'empty string' => '',
             ],
         );
 });

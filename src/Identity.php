@@ -22,4 +22,13 @@ class Identity
 
         return $object;
     }
+
+    public static function tryIdentify(string $number): ?IdentityNumberInterface
+    {
+        try {
+            return self::identify($number);
+        } catch (IdentityException) {
+            return null;
+        }
+    }
 }
