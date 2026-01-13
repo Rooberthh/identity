@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Rooberthh\Identity\Gender;
+use Rooberthh\Identity\Enums\Gender;
+use Rooberthh\Identity\Exceptions\IdentityException;
 use Rooberthh\Identity\Identity;
-use Rooberthh\Identity\IdentityException;
 use Rooberthh\Identity\OrganizationNumber;
 use Rooberthh\Identity\PersonalNumber;
 use Rooberthh\Identity\Tests\IdentityTestCase;

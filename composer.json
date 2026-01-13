@@ -1,10 +1,13 @@
 {
-    "name": "rooberthh/identity",
-    "description": "A php package to identify swedish personal numbers or organization numbers from a string.",
+    "name": "rooberthh/laravel-identity",
+    "description": "A Laravel package to identify and validate Swedish personal numbers (personnummer) and organization numbers (organisationsnummer).",
     "type": "library",
     "keywords": [
+        "laravel",
         "php",
-        "package"
+        "personnummer",
+        "organisationsnummer",
+        "swedish"
     ],
     "license": "MIT",
     "authors": [
@@ -19,14 +22,23 @@
     },
     "funding": [],
     "require": {
-        "php": "^8.3"
+        "php": "^8.3",
+        "illuminate/contracts": "^11.0|^12.0",
+        "illuminate/support": "^11.0|^12.0",
+        "illuminate/validation": "^11.0|^12.0"
     },
     "require-dev": {
+        "larastan/larastan": "^3.0",
         "laravel/pint": "^1.13.7",
-        "pestphp/pest": "^3.5",
-        "phpstan/phpstan": "^1.10.50"
+        "pestphp/pest": "^3.5"
     },
-    "suggest": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Rooberthh\\Identity\\IdentityServiceProvider"
+            ]
+        }
+    },
     "autoload": {
         "psr-4": {
             "Rooberthh\\Identity\\": "src/"

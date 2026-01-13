@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Rooberthh\Identity;
 
+use Rooberthh\Identity\Contracts\IdentityNumberInterface;
+use Rooberthh\Identity\Enums\Gender;
+use Rooberthh\Identity\Exceptions\IdentityException;
+
 final class PersonalNumber implements IdentityNumberInterface
 {
     protected string $normalizedNumber;

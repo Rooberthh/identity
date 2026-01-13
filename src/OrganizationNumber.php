@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Rooberthh\Identity;
 
+use Rooberthh\Identity\Contracts\IdentityNumberInterface;
+use Rooberthh\Identity\Exceptions\IdentityException;
+
 final class OrganizationNumber implements IdentityNumberInterface
 {
     protected string $normalizedNumber;

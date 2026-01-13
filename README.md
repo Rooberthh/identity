@@ -102,7 +102,7 @@ $org->shortFormat(true);       // "556074-7569"
 ### Error handling
 
 ```php
-use Rooberthh\Identity\IdentityException;
+use Rooberthh\Identity\Exceptions\IdentityException;
 
 try {
     $person = new PersonalNumber('invalid');

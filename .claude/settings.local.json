@@ -6,7 +6,12 @@
       "Bash(./vendor/bin/pest:*)",
       "Bash(composer stan:*)",
       "Bash(composer pint:*)",
-      "Bash(composer dump-autoload:*)"
+      "Bash(composer dump-autoload:*)",
+      "Bash(find:*)",
+      "Bash(tree:*)",
+      "Bash(composer update:*)",
+      "Bash(./vendor/bin/phpstan analyse:*)",
+      "Bash(composer require:*)"
     ]
   }
 }

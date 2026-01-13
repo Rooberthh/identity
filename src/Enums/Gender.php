@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Rooberthh\Identity;
+namespace Rooberthh\Identity\Enums;
 
 enum Gender: string
 {
