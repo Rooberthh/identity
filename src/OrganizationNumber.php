@@ -22,7 +22,7 @@ final class OrganizationNumber implements IdentityNumberInterface
 
     public static function isValid(string $number): bool
     {
-        $numberInDigits = preg_replace('/\D/', '', $number);
+        $numberInDigits = self::normalize($number);
 
         if ((int) substr($numberInDigits, 2, 2) < 20) {
             return false;
@@ -47,6 +47,13 @@ final class OrganizationNumber implements IdentityNumberInterface
 
     public static function normalize(string $number): string
     {
-        return preg_replace('/\D/', '', $number);
+        $numberInDigits = preg_replace('/\D/', '', $number);
+
+        if (strlen($numberInDigits) === 12) {
+            $numberInDigits = substr($numberInDigits, 2);
+        }
+
+
+        return $numberInDigits;
     }
 }

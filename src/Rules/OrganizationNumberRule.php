@@ -8,7 +8,7 @@ use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Rooberthh\Identity\OrganizationNumber;
 
-final class OrganizationsNumberRule implements ValidationRule
+final class OrganizationNumberRule implements ValidationRule
 {
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {

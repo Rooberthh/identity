@@ -1,5 +1,5 @@
 {
-    "name": "rooberthh/laravel-identity",
+    "name": "rooberthh/identity",
     "description": "A Laravel package to identify and validate Swedish personal numbers (personnummer) and organization numbers (organisationsnummer).",
     "type": "library",
     "keywords": [
