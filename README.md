@@ -110,3 +110,87 @@ try {
     // "'invalid' is not valid personal number."
 }
 ```
+
+## Laravel Usage
+
+### Validation Rules
+
+```php
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Rooberthh\Identity\Rules\PersonalNumberRule;
+use Rooberthh\Identity\Rules\OrganizationNumberRule;
+use Rooberthh\Identity\Rules\IdentityRule;
+
+class StoreCustomerRequest extends FormRequest
+{
+    public function rules(): array
+    {
+        return [
+            // Validate personal number only
+            'personal_number' => ['required', new PersonalNumberRule],
+
+            // Validate organization number only
+            'organization_number' => ['required', new OrganizationNumberRule],
+
+            // Validate either type (personal or organization)
+            'identity_number' => ['required', new IdentityRule],
+        ];
+    }
+}
+```
+
+### Model Casts
+
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Rooberthh\Identity\Casts\PersonalNumberCast;
+use Rooberthh\Identity\Casts\OrganizationNumberCast;
+use Rooberthh\Identity\Casts\IdentityCast;
+
+class Customer extends Model
+{
+    protected function casts(): array
+    {
+        return [
+            'personal_number' => PersonalNumberCast::class,
+            'organization_number' => OrganizationNumberCast::class,
+            'identity_number' => IdentityCast::class,  // Auto-detects type
+        ];
+    }
+}
+```
+
+### Usage with Casted Attributes
+
+```php
+$customer = Customer::find(1);
+
+// Personal number - returns PersonalNumber object
+$customer->personal_number->shortFormat(true);  // "770604-0016"
+$customer->personal_number->longFormat();       // "197706040016"
+$customer->personal_number->getBirthDate();     // DateTimeImmutable
+$customer->personal_number->getAge();           // 48
+$customer->personal_number->getGender();        // Gender::Male
+$customer->personal_number->isMale();           // true
+
+// Organization number - returns OrganizationNumber object
+$customer->organization_number->shortFormat(true);  // "556074-7569"
+
+// Identity cast - auto-detects and returns appropriate type
+if ($customer->identity_number instanceof PersonalNumber) {
+    echo $customer->identity_number->getAge();
+}
+
+// Setting values - accepts string or object
+$customer->personal_number = '770604-0016';
+$customer->personal_number = new PersonalNumber('770604-0016');
+$customer->save();  // Stored as "197706040016" (long format)
+```
