@@ -30,7 +30,7 @@
     "require-dev": {
         "larastan/larastan": "^3.0",
         "laravel/pint": "^1.13.7",
-        "pestphp/pest": "^3.5"
+        "pestphp/pest": "^4.3"
     },
     "extra": {
         "laravel": {
