@@ -19,8 +19,14 @@ class IdentityException extends \RuntimeException
     }
 
     /** @throws IdentityException */
+    public static function invalidVatNumber(string $number): void
+    {
+        throw new self("'$number' is not valid VAT number.");
+    }
+
+    /** @throws IdentityException */
     public static function invalidIdentityNumber(string $number): void
     {
-        throw new self("'$number' could not be resolved to a personal or organization number.");
+        throw new self("'$number' could not be resolved to a personal, organization or VAT number.");
     }
 }
