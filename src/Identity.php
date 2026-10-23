@@ -13,7 +13,9 @@ final class Identity
     {
         $numberWithoutSeparator = str_replace(['-', '+'], '', $number);
 
-        if (strlen($numberWithoutSeparator) > 10) {
+        if (str_starts_with(strtoupper(ltrim($number)), 'SE')) {
+            $object = new VatNumber($number);
+        } elseif (strlen($numberWithoutSeparator) > 10) {
             $object = new PersonalNumber($number);
         } elseif (strlen($numberWithoutSeparator) === 10 && (int) substr($numberWithoutSeparator, 2, 2) >= 20) {
             $object = new OrganizationNumber($number);

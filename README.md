@@ -1,6 +1,6 @@
 # Identity
 
-A PHP package to validate and identify Swedish personal numbers (personnummer) and organization numbers (organisationsnummer).
+A PHP package to validate and identify Swedish personal numbers (personnummer), organization numbers (organisationsnummer) and VAT numbers (momsregistreringsnummer).
 
 ## Usage
 
@@ -14,6 +14,9 @@ $identity = Identity::identify('770604-0016');
 
 $identity = Identity::identify('556074-7569');
 // Returns OrganizationNumber instance
+
+$identity = Identity::identify('SE556074756901');
+// Returns VatNumber instance
 ```
 
 ### Safe identification (no exceptions)
@@ -99,6 +102,26 @@ $org = new OrganizationNumber('5560747569');
 $org->shortFormat(true);       // "556074-7569"
 ```
 
+### VAT number (momsregistreringsnummer)
+
+A Swedish VAT number is `SE` + the 10-digit organization number (or personal number for sole traders) + `01`.
+
+```php
+use Rooberthh\Identity\VatNumber;
+
+if (VatNumber::isValid('SE556074756901')) {
+    // Valid VAT number
+}
+
+$vat = new VatNumber('se 556074-7569 01');
+$vat->longFormat();            // "SE556074756901"
+$vat->getIdentityNumber();     // OrganizationNumber (or PersonalNumber for sole traders)
+$vat->isSoleTrader();          // false
+
+// Create from an existing organization or personal number
+VatNumber::fromIdentityNumber(new OrganizationNumber('556074-7569'))->longFormat(); // "SE556074756901"
+```
+
 ### Error handling
 
 ```php
@@ -123,6 +146,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Rooberthh\Identity\Rules\PersonalNumberRule;
 use Rooberthh\Identity\Rules\OrganizationNumberRule;
+use Rooberthh\Identity\Rules\VatNumberRule;
 use Rooberthh\Identity\Rules\IdentityRule;
 
 class StoreCustomerRequest extends FormRequest
@@ -136,7 +160,10 @@ class StoreCustomerRequest extends FormRequest
             // Validate organization number only
             'organization_number' => ['required', new OrganizationNumberRule],
 
-            // Validate either type (personal or organization)
+            // Validate VAT number only
+            'vat_number' => ['required', new VatNumberRule],
+
+            // Validate any type (personal, organization or VAT)
             'identity_number' => ['required', new IdentityRule],
         ];
     }
@@ -153,6 +180,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Rooberthh\Identity\Casts\PersonalNumberCast;
 use Rooberthh\Identity\Casts\OrganizationNumberCast;
+use Rooberthh\Identity\Casts\VatNumberCast;
 use Rooberthh\Identity\Casts\IdentityCast;
 
 class Customer extends Model
@@ -162,6 +190,7 @@ class Customer extends Model
         return [
             'personal_number' => PersonalNumberCast::class,
             'organization_number' => OrganizationNumberCast::class,
+            'vat_number' => VatNumberCast::class,
             'identity_number' => IdentityCast::class,  // Auto-detects type
         ];
     }

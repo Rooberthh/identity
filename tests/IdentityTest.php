@@ -8,6 +8,7 @@ use Rooberthh\Identity\Identity;
 use Rooberthh\Identity\OrganizationNumber;
 use Rooberthh\Identity\PersonalNumber;
 use Rooberthh\Identity\Tests\IdentityTestCase;
+use Rooberthh\Identity\VatNumber;
 
 uses(IdentityTestCase::class);
 
@@ -334,4 +335,85 @@ describe('Identity::tryIdentify', function () {
                 'empty string' => '',
             ],
         );
+});
+
+describe('VatNumber', function () {
+    it('can determine the identity from a swedish vat number', function (string $vatNumber) {
+        $identity = Identity::identify($vatNumber);
+
+        expect($identity)->toBeInstanceOf(VatNumber::class);
+    })
+        ->with(
+            [
+                'organization number' => 'SE556074756901',
+                'lowercase prefix' => 'se556074756901',
+                'with spaces' => 'SE 556074-7569 01',
+                'sole trader' => 'SE770604001601',
+            ],
+        );
+
+    it('throws an exception if the vat number is invalid', function (string $vatNumber) {
+        new VatNumber($vatNumber);
+    })->throws(IdentityException::class)
+        ->with(
+            [
+                'invalid checksum' => 'SE556074756101',
+                'wrong suffix' => 'SE556074756902',
+                'missing prefix' => '556074756901',
+                'wrong country' => 'DK556074756901',
+                'too short' => 'SE55607475690',
+                'invalid personal number date' => 'SE770692001601',
+            ],
+        );
+
+    it('throws an exception from identify if the vat number is invalid', function () {
+        Identity::identify('SE556074756101');
+    })->throws(IdentityException::class);
+
+    it('normalizes the vat number', function (string $vatNumber) {
+        $vat = new VatNumber($vatNumber);
+
+        expect($vat->longFormat())->toBe('SE556074756901');
+        expect($vat->shortFormat())->toBe('SE556074756901');
+        expect($vat->longFormat(true))->toBe('SE556074756901');
+    })
+        ->with(
+            [
+                'SE556074756901',
+                'se556074756901',
+                'SE 556074-7569 01',
+                ' SE556074756901 ',
+            ],
+        );
+
+    it('resolves the underlying organization number', function () {
+        $vat = new VatNumber('SE556074756901');
+
+        expect($vat->getIdentityNumber())->toBeInstanceOf(OrganizationNumber::class);
+        expect($vat->getIdentityNumber()->shortFormat(true))->toBe('556074-7569');
+        expect($vat->isSoleTrader())->toBeFalse();
+    });
+
+    it('resolves the underlying personal number for sole traders', function () {
+        $vat = new VatNumber('SE770604001601');
+
+        expect($vat->getIdentityNumber())->toBeInstanceOf(PersonalNumber::class);
+        expect($vat->getIdentityNumber()->shortFormat(true))->toBe('770604-0016');
+        expect($vat->isSoleTrader())->toBeTrue();
+    });
+
+    it('can be created from an identity number', function (OrganizationNumber|PersonalNumber $identityNumber, string $expected) {
+        expect(VatNumber::fromIdentityNumber($identityNumber)->longFormat())->toBe($expected);
+    })
+        ->with(
+            [
+                'organization number' => [new OrganizationNumber('556074-7569'), 'SE556074756901'],
+                'personal number' => [new PersonalNumber('19770604-0016'), 'SE770604001601'],
+            ],
+        );
+
+    it('returns VatNumber from tryIdentify', function () {
+        expect(Identity::tryIdentify('SE556074756901'))->toBeInstanceOf(VatNumber::class);
+        expect(Identity::tryIdentify('SE556074756101'))->toBeNull();
+    });
 });
