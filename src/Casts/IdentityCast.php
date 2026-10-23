@@ -6,6 +6,7 @@ namespace Rooberthh\Identity\Casts;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
+use Rooberthh\Identity\Enums\Format;
 use Rooberthh\Identity\Contracts\IdentityNumberInterface;
 use Rooberthh\Identity\Identity;
 
@@ -42,7 +43,7 @@ final class IdentityCast implements CastsAttributes
         }
 
         if ($value instanceof IdentityNumberInterface) {
-            return $value->longFormat();
+            return $value->format(Format::Long);
         }
 
         return (string) $value;

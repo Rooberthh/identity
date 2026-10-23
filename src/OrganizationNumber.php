@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rooberthh\Identity;
 
 use Rooberthh\Identity\Contracts\IdentityNumberInterface;
+use Rooberthh\Identity\Enums\Format;
 use Rooberthh\Identity\Exceptions\IdentityException;
 
 final class OrganizationNumber implements IdentityNumberInterface
@@ -31,18 +32,26 @@ final class OrganizationNumber implements IdentityNumberInterface
         return Luhn::check($numberInDigits);
     }
 
-    public function longFormat(bool $separator = false): string
+    /**
+     * Organization numbers have no century, so short and long formats are identical.
+     * @param Format $format
+     */
+    public function format(Format $format = Format::Long): string
     {
-        return $this->shortFormat($separator);
+        return match ($format) {
+            Format::Short, Format::Long => $this->withoutSeparator(),
+            Format::ShortWithSeparator, Format::LongWithSeparator => $this->withSeparator(),
+        };
     }
 
-    public function shortFormat(bool $separator = false): string
+    protected function withoutSeparator(): string
     {
-        if ($separator) {
-            return substr_replace($this->normalizedNumber, '-', -4, 0);
-        }
-
         return $this->normalizedNumber;
+    }
+
+    protected function withSeparator(): string
+    {
+        return substr_replace($this->normalizedNumber, '-', -4, 0);
     }
 
     public static function normalize(string $number): string
