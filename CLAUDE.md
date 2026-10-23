@@ -36,7 +36,7 @@ tests/
 - Input starting with `SE` is treated as a VAT number; the inner 10 digits must be a valid organization or personal number
 - Organization numbers have month digits >= 20 (third and fourth digits)
 - Personal numbers use standard date validation + Luhn checksum
-- All types implement `IdentityNumberInterface` with `longFormat()` and `shortFormat()` methods
+- All types implement `IdentityNumberInterface` with a `format(Format $format)` method (`Enums\Format`: `Short`, `ShortWithSeparator`, `Long`, `LongWithSeparator`)
 
 ## Code Style
 

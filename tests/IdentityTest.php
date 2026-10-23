@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Rooberthh\Identity\Enums\Format;
 use Rooberthh\Identity\Enums\Gender;
 use Rooberthh\Identity\Exceptions\IdentityException;
 use Rooberthh\Identity\Identity;
@@ -72,7 +73,7 @@ describe('OrganizationNumber', function () {
     it('can get an organization-number with separator', function (string $organizationNumber, string $expectedValue) {
         $organizationNumber = new OrganizationNumber($organizationNumber);
 
-        expect($organizationNumber->shortFormat(true))->toBe($expectedValue);
+        expect($organizationNumber->format(Format::ShortWithSeparator))->toBe($expectedValue);
     })
         ->with(
             [
@@ -90,7 +91,7 @@ describe('OrganizationNumber', function () {
     it('can get an personal-number in short format without separator', function (string $ssn, string $expectedValue) {
         $personalNumber = new PersonalNumber($ssn);
 
-        expect($personalNumber->shortFormat())->toBe($expectedValue);
+        expect($personalNumber->format(Format::Short))->toBe($expectedValue);
     })
         ->with(
             [
@@ -132,8 +133,8 @@ describe('PersonalNumber', function () {
     it('can identify centenarians using + separator', function (string $ssn, string $expectedShort, string $expectedLong) {
         $personalNumber = new PersonalNumber($ssn);
 
-        expect($personalNumber->shortFormat(true))->toBe($expectedShort);
-        expect($personalNumber->longFormat())->toBe($expectedLong);
+        expect($personalNumber->format(Format::ShortWithSeparator))->toBe($expectedShort);
+        expect($personalNumber->format(Format::Long))->toBe($expectedLong);
     })
         ->with(
             [
@@ -153,8 +154,8 @@ describe('PersonalNumber', function () {
     it('can get a personal-number in long format', function (string $ssn, string $expectedWithSeparator, string $expectedWithoutSeparator) {
         $personalNumber = new PersonalNumber($ssn);
 
-        expect($personalNumber->longFormat(true))->toBe($expectedWithSeparator);
-        expect($personalNumber->longFormat(false))->toBe($expectedWithoutSeparator);
+        expect($personalNumber->format(Format::LongWithSeparator))->toBe($expectedWithSeparator);
+        expect($personalNumber->format(Format::Long))->toBe($expectedWithoutSeparator);
     })
         ->with(
             [
@@ -196,7 +197,7 @@ describe('PersonalNumber', function () {
     it('can get an personal-number in short format with separator', function (string $ssn, string $expectedValue) {
         $personalNumber = new PersonalNumber($ssn);
 
-        expect($personalNumber->shortFormat(true))->toBe($expectedValue);
+        expect($personalNumber->format(Format::ShortWithSeparator))->toBe($expectedValue);
     })
     ->with(
         [
@@ -222,7 +223,7 @@ describe('PersonalNumber', function () {
     it('can get an personal-number in short format without separator', function (string $ssn, string $expectedValue) {
         $personalNumber = new PersonalNumber($ssn);
 
-        expect($personalNumber->shortFormat())->toBe($expectedValue);
+        expect($personalNumber->format(Format::Short))->toBe($expectedValue);
     })
         ->with(
             [
@@ -373,9 +374,9 @@ describe('VatNumber', function () {
     it('normalizes the vat number', function (string $vatNumber) {
         $vat = new VatNumber($vatNumber);
 
-        expect($vat->longFormat())->toBe('SE556074756901');
-        expect($vat->shortFormat())->toBe('SE556074756901');
-        expect($vat->longFormat(true))->toBe('SE556074756901');
+        expect($vat->format(Format::Long))->toBe('SE556074756901');
+        expect($vat->format(Format::Short))->toBe('SE556074756901');
+        expect($vat->format(Format::LongWithSeparator))->toBe('SE556074756901');
     })
         ->with(
             [
@@ -390,7 +391,7 @@ describe('VatNumber', function () {
         $vat = new VatNumber('SE556074756901');
 
         expect($vat->getIdentityNumber())->toBeInstanceOf(OrganizationNumber::class);
-        expect($vat->getIdentityNumber()->shortFormat(true))->toBe('556074-7569');
+        expect($vat->getIdentityNumber()->format(Format::ShortWithSeparator))->toBe('556074-7569');
         expect($vat->isSoleTrader())->toBeFalse();
     });
 
@@ -398,12 +399,12 @@ describe('VatNumber', function () {
         $vat = new VatNumber('SE770604001601');
 
         expect($vat->getIdentityNumber())->toBeInstanceOf(PersonalNumber::class);
-        expect($vat->getIdentityNumber()->shortFormat(true))->toBe('770604-0016');
+        expect($vat->getIdentityNumber()->format(Format::ShortWithSeparator))->toBe('770604-0016');
         expect($vat->isSoleTrader())->toBeTrue();
     });
 
     it('can be created from an identity number', function (OrganizationNumber|PersonalNumber $identityNumber, string $expected) {
-        expect(VatNumber::fromIdentityNumber($identityNumber)->longFormat())->toBe($expected);
+        expect(VatNumber::fromIdentityNumber($identityNumber)->format(Format::Long))->toBe($expected);
     })
         ->with(
             [
@@ -416,4 +417,36 @@ describe('VatNumber', function () {
         expect(Identity::tryIdentify('SE556074756901'))->toBeInstanceOf(VatNumber::class);
         expect(Identity::tryIdentify('SE556074756101'))->toBeNull();
     });
+});
+
+describe('Format', function () {
+    it('formats in long format by default', function (string $number) {
+        $identity = Identity::identify($number);
+
+        expect($identity->format())->toBe($identity->format(Format::Long));
+    })
+        ->with(
+            [
+                'personal number' => '770604-0016',
+                'organization number' => '556074-7569',
+                'vat number' => 'SE556074756901',
+            ],
+        );
+
+    it('formats every identity type in all formats', function (string $number, array $expected) {
+        $identity = Identity::identify($number);
+
+        expect($identity->format(Format::Short))->toBe($expected[0]);
+        expect($identity->format(Format::ShortWithSeparator))->toBe($expected[1]);
+        expect($identity->format(Format::Long))->toBe($expected[2]);
+        expect($identity->format(Format::LongWithSeparator))->toBe($expected[3]);
+    })
+        ->with(
+            [
+                'personal number' => ['770604-0016', ['7706040016', '770604-0016', '197706040016', '19770604-0016']],
+                'centenarian' => ['770604+0016', ['7706040016', '770604+0016', '187706040016', '18770604-0016']],
+                'organization number' => ['5560747569', ['5560747569', '556074-7569', '5560747569', '556074-7569']],
+                'vat number' => ['se 556074-7569 01', ['SE556074756901', 'SE556074756901', 'SE556074756901', 'SE556074756901']],
+            ],
+        );
 });

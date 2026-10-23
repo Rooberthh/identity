@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rooberthh\Identity;
 
 use Rooberthh\Identity\Contracts\IdentityNumberInterface;
+use Rooberthh\Identity\Enums\Format;
 use Rooberthh\Identity\Enums\Gender;
 use Rooberthh\Identity\Exceptions\IdentityException;
 
@@ -72,26 +73,36 @@ final class PersonalNumber implements IdentityNumberInterface
         return Luhn::check($numberInDigits);
     }
 
-    public function longFormat(bool $separator = false): string
+    public function format(Format $format = Format::Long): string
     {
-        $fullSsn = $this->getYear() . substr($this->normalizedNumber, 2);
-
-        if ($separator) {
-            return substr_replace($fullSsn, '-', -4, 0);
-        }
-
-        return $fullSsn;
+        return match ($format) {
+            Format::Short => $this->short(),
+            Format::ShortWithSeparator => $this->shortWithSeparator(),
+            Format::Long => $this->long(),
+            Format::LongWithSeparator => $this->longWithSeparator(),
+        };
     }
 
-    public function shortFormat(bool $separator = false): string
+    protected function short(): string
     {
-        if ($separator) {
-            $separatorChar = $this->centenarian ? '+' : '-';
-
-            return substr_replace($this->normalizedNumber, $separatorChar, 6, 0);
-        }
-
         return $this->normalizedNumber;
+    }
+
+    protected function shortWithSeparator(): string
+    {
+        $separatorChar = $this->centenarian ? '+' : '-';
+
+        return substr_replace($this->normalizedNumber, $separatorChar, 6, 0);
+    }
+
+    protected function long(): string
+    {
+        return $this->getYear() . substr($this->normalizedNumber, 2);
+    }
+
+    protected function longWithSeparator(): string
+    {
+        return substr_replace($this->long(), '-', -4, 0);
     }
 
     public static function normalize(string $number): string

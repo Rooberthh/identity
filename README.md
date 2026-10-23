@@ -47,12 +47,14 @@ $person = new PersonalNumber('770604-0016');
 ### Personal number formatting
 
 ```php
+use Rooberthh\Identity\Enums\Format;
+
 $person = new PersonalNumber('7706040016');
 
-$person->shortFormat();        // "7706040016"
-$person->shortFormat(true);    // "770604-0016"
-$person->longFormat();         // "197706040016"
-$person->longFormat(true);     // "19770604-0016"
+$person->format(Format::Short);               // "7706040016"
+$person->format(Format::ShortWithSeparator);  // "770604-0016"
+$person->format(Format::Long);                // "197706040016"
+$person->format(Format::LongWithSeparator);   // "19770604-0016"
 ```
 
 ### Extract metadata from personal number
@@ -60,12 +62,12 @@ $person->longFormat(true);     // "19770604-0016"
 ```php
 $person = new PersonalNumber('770604-0016');
 
-$person->getBirthDate();       // DateTimeImmutable: 1977-06-04
-$person->getAge();             // int (calculated from today)
-$person->getGender();          // Gender::Male
-$person->isMale();             // true
-$person->isFemale();           // false
-$person->isOfAge(18);          // true
+$person->getBirthDate();  // DateTimeImmutable: 1977-06-04
+$person->getAge();        // int (calculated from today)
+$person->getGender();     // Gender::Male
+$person->isMale();        // true
+$person->isFemale();      // false
+$person->isOfAge(18);     // true
 ```
 
 ### Centenarians (100+ years old)
@@ -74,9 +76,9 @@ $person->isOfAge(18);          // true
 // The + separator indicates a person born 100+ years ago
 $person = new PersonalNumber('770604+0016');
 
-$person->isCentenarian();      // true
-$person->getBirthDate();       // DateTimeImmutable: 1877-06-04
-$person->shortFormat(true);    // "770604+0016"
+$person->isCentenarian();                     // true
+$person->getBirthDate();                      // DateTimeImmutable: 1877-06-04
+$person->format(Format::ShortWithSeparator);  // "770604+0016"
 ```
 
 ### Coordination numbers (samordningsnummer)
@@ -86,7 +88,7 @@ $person->shortFormat(true);    // "770604+0016"
 $person = new PersonalNumber('770664-0005');
 
 $person->isCoordinationNumber(); // true
-$person->getBirthDate();         // DateTimeImmutable: 1977-06-04
+$person->getBirthDate();  // DateTimeImmutable: 1977-06-04
 ```
 
 ### Organization number validation
@@ -99,7 +101,7 @@ if (OrganizationNumber::isValid('556074-7569')) {
 }
 
 $org = new OrganizationNumber('5560747569');
-$org->shortFormat(true);       // "556074-7569"
+$org->format(Format::ShortWithSeparator);  // "556074-7569"
 ```
 
 ### VAT number (momsregistreringsnummer)
@@ -114,12 +116,12 @@ if (VatNumber::isValid('SE556074756901')) {
 }
 
 $vat = new VatNumber('se 556074-7569 01');
-$vat->longFormat();            // "SE556074756901"
-$vat->getIdentityNumber();     // OrganizationNumber (or PersonalNumber for sole traders)
-$vat->isSoleTrader();          // false
+$vat->format(Format::Long);  // "SE556074756901"
+$vat->getIdentityNumber();   // OrganizationNumber (or PersonalNumber for sole traders)
+$vat->isSoleTrader();        // false
 
 // Create from an existing organization or personal number
-VatNumber::fromIdentityNumber(new OrganizationNumber('556074-7569'))->longFormat(); // "SE556074756901"
+VatNumber::fromIdentityNumber(new OrganizationNumber('556074-7569'))->format(Format::Long); // "SE556074756901"
 ```
 
 ### Error handling
@@ -203,15 +205,15 @@ class Customer extends Model
 $customer = Customer::find(1);
 
 // Personal number - returns PersonalNumber object
-$customer->personal_number->shortFormat(true);  // "770604-0016"
-$customer->personal_number->longFormat();       // "197706040016"
-$customer->personal_number->getBirthDate();     // DateTimeImmutable
-$customer->personal_number->getAge();           // 48
-$customer->personal_number->getGender();        // Gender::Male
-$customer->personal_number->isMale();           // true
+$customer->personal_number->format(Format::ShortWithSeparator);  // "770604-0016"
+$customer->personal_number->format(Format::Long);                // "197706040016"
+$customer->personal_number->getBirthDate();                      // DateTimeImmutable
+$customer->personal_number->getAge();                            // 48
+$customer->personal_number->getGender();                         // Gender::Male
+$customer->personal_number->isMale();                            // true
 
 // Organization number - returns OrganizationNumber object
-$customer->organization_number->shortFormat(true);  // "556074-7569"
+$customer->organization_number->format(Format::ShortWithSeparator);  // "556074-7569"
 
 // Identity cast - auto-detects and returns appropriate type
 if ($customer->identity_number instanceof PersonalNumber) {

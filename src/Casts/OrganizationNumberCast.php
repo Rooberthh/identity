@@ -6,6 +6,7 @@ namespace Rooberthh\Identity\Casts;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
+use Rooberthh\Identity\Enums\Format;
 use Rooberthh\Identity\Exceptions\IdentityException;
 use Rooberthh\Identity\OrganizationNumber;
 
@@ -46,7 +47,7 @@ final class OrganizationNumberCast implements CastsAttributes
         }
 
         if ($value instanceof OrganizationNumber) {
-            return $value->longFormat();
+            return $value->format(Format::Long);
         }
 
         return (string) $value;
